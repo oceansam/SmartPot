@@ -2,7 +2,12 @@
 <div>
 
   <HelloWorld msg="Smart Pot"/>
-  <PlantContainer/>
+  <div class = "plantGrid">
+  <div :key="plant.name" v-for="plant in plants">
+    <PlantContainer :plantData="plant"/>
+ 
+  </div>
+  </div>
 </div>
 </template>
 
@@ -15,7 +20,25 @@ export default defineComponent({
   components: {
     HelloWorld,
     PlantContainer
-  }
+  },
+  data(){
+    return{
+      plants : [
+          {
+            name: 'Tomato',
+            date: '2021-05-01'
+          },
+          {
+            name: 'Mint',
+            date:'2021-04-30'
+          },
+          {
+            name:'Potato',
+            date:'2021-04-30'
+          }
+      ],
+    }
+  },
 });
 </script>
 
@@ -29,6 +52,12 @@ export default defineComponent({
   color: #e7f1e1;
   margin-top: 60px;
   
+}
+.plantGrid{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+ 
 }
 *{
   background-color: #2F3E46;
