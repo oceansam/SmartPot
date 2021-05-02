@@ -1,42 +1,60 @@
 <template>
 <div>
 
-  <HelloWorld msg="Smart Pot"/>
+  <Header title="Smart Pot"/>
   <div class = "plantGrid">
-  <div :key="plant.name" v-for="plant in plants">
-    <PlantContainer :plantData="plant"/>
- 
+    <PlantContainer :plantData="plant1"/>
+    <PlantContainer :plantData="plant2"/>
+    <PlantContainer :plantData="plant3"/>
+
+
+    
   </div>
-  </div>
+
+  <h2>Creators</h2>
+  <p>Abdullah Aftab</p>
+  <p>Jonathon Edey</p>
+  <p>Kyle Choo Mang</p>
+  <p>Samee Chowdhury</p>
+
 </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import HelloWorld from './components/PostRequest.vue';
+import Header from './components/Header.vue';
 import PlantContainer from "./components/PlantContainer.vue";
+
 export default defineComponent({
   name: 'App',
   components: {
-    HelloWorld,
+    Header,
     PlantContainer
   },
   data(){
     return{
-      plants : [
+      plant1:
           {
             name: 'Tomato',
             date: '2021-05-01'
           },
+      plant2:
           {
             name: 'Mint',
+            waterLevel: 45,
+            tempLevel: 34,
+            humidLevel: 23,
             date:'2021-04-30'
           },
+      plant3:
           {
             name:'Potato',
+            waterLevel: 65,
+            tempLevel: 43,
+            humidLevel: 55,
             date:'2021-04-30'
           }
-      ],
+      
     }
   },
 });

@@ -1,28 +1,20 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
+  <div>
+    <h1>{{ title }}</h1>
 
 
-   </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'Post-Request',
+  name: 'Header',
   props:{
-    msg: String,
+    title: String,
+    fontsize: Number
   },
-  data(){
-    return{
-      postId: null,
-      waterLevel: Number,
-
-    }
-  },
- 
-
 
 });
 </script>

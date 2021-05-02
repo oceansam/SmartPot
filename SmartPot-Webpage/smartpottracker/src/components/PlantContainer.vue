@@ -8,8 +8,10 @@
                     </div>
         
                     <h1>{{plantData.name}}</h1> 
+                    <div class= "tooltip">
+                            <span class="tooltiptext">Moisture</span>
 
-                        <svg class="waterLevel" height= '80' width= '80' >
+                        <svg class="levelStatus" height= '80' width= '80' >
                             <circle
                                 class="progress-ring__circle"
                                 stroke="#2F3E46"
@@ -20,8 +22,13 @@
                                 cy="40"/>
                                 <text x="24" y="50" font-family="Verdana" font-size="25" fill= "#e7f1e1">{{waterLevel}}</text>
                         </svg>
+                        </div>
+                    <div>
 
-                        <svg class="tempLevel" height= "80" width= "80">
+                        <div class= "tooltip">
+                            <span class="tooltiptext">Temperature</span>
+
+                        <svg class="levelStatus" height= "80" width= "80">
                             <circle
                                 class="progress-ring__circle"
                                 stroke="#2F3E46"
@@ -33,101 +40,185 @@
                                 <text x="24" y="50" font-family="Verdana" font-size="25" fill= "#e7f1e1">{{tempLevel}}</text>
 
                         </svg>
-
-                        <div class="footWarning">
-                            <img v-bind:class="{lowStatus: waterLevel > 50}" src = "./../assets/waterStatus.svg">
-                            <img v-bind:class="{lowStatus: tempLevel < 50,lowStatus: tempLevel > 80}" src="./../assets/tempStatus.svg">
-                            <p v-if="waterLevel < 50">*Water Needed</p>
-                            <p v-if="tempLevel > 60">*High Temp</p>
-                            <p v-else-if="tempLevel < 10">*Low Temp</p>
                         </div>
-                                          
+                        <div class= "tooltip">
+                            <span class="tooltiptext">Humidity</span>
+                            <svg class="levelStatus" height= "80" width= "80">
+                                <circle
+                                    class="progress-ring__circle"
+                                    stroke="#2F3E46"
+                                    stroke-width="4"
+                                    fill="#d3d148"
+                                    r="36"
+                                    cx="40"
+                                    cy="40"/>
+                                    <text x="24" y="50" font-family="Verdana" font-size="25" fill= "#e7f1e1">{{humidLevel}}</text>
+
+                            </svg>
+                        </div>
+                    </div>
+                    <WarningStatus :tempLevel="tempLevel" :waterLevel="waterLevel" :humidLevel="humidLevel"/>
+                    <div class="date">
+                        <p>{{plantData.date}}</p>
+                    </div>     
             </div>
         </div>
-
-
     </div>
 </template>
 
 <script lang="ts">
 
+import WarningStatus from "./WarningStatus.vue";
 import { defineComponent } from 'vue'
 import axios from 'axios';
+
+
 export default defineComponent({
-    
+
     name:'PlantContainer',
+    components:{
+        WarningStatus,
+    },
     data(){
         return{
             waterLevel : 99,
-            tempLevel: 99
+            tempLevel: 99,
+            humidLevel: 99,
         }
     },
     props:{
         plantData: Object,
-
+        
     },
-    methods:{
-        createPost(){
-            this.waterLevel = 23;
-            this.tempLevel =99
-            // axios.post('url',this.waterLevel)
-            // .then(response => console.log(response))
-            // .then(error => console.log(error))
+   methods:{
+        createPost(){     
+
+        axios.get('https://b2cb7c62963e.ngrok.io/web/stats')
+            .then(response =>{
+                console.log(response.data.event)
+                const data = response.data.stats
+                this.waterLevel = data.moisture;
+                this.tempLevel = data.temp;
+                this.humidLevel = data.humidity
+            })
+            .catch(error => console.log(error))
+            
+            
         }
     },
-    // created(){
+    created(){
+        if (this?.plantData?.waterLevel === undefined)
+        {
+        axios.get('https://b2cb7c62963e.ngrok.io/web/stats')
+            .then(response => {
+                const data = response.data.stats
+                this.waterLevel = data.moisture;
+                this.tempLevel = data.temp;
+                this.humidLevel = data.humidity
+            })
+            .catch(error => console.log(error))
+            .then(() => {
+                // default safe case
+                this.waterLevel = 53;
+                this.tempLevel = 23;
+                this.humidLevel = 65;
+            });
+
+        }
+        else
+        {
+            this.waterLevel = this.plantData.waterLevel;
+            this.tempLevel = this.plantData.tempLevel;
+            this.humidLevel = this.plantData.humidLevel;
         
-    //     axios.post('url',this.waterLevel)
-    //     .then(response => console.log(response))
-    //     .then(error => console.log(error))
+        }
+    },
+    mounted(){
+        if (this?.plantData?.name == "Tomato"){
+            axios.post('https://b2cb7c62963e.ngrok.io/hook')
+                .then(response => console.log(response.data.event))
+                .catch(error => console.log(error))
         
-    // }
+        }
+
+            
+    }
+ 
 })
 </script>
 
 <style scoped lang = "scss">
-$backColor: #6ca076;
-$lightBack:#2F3E46;
-$textColor: #e7f1e1;
+@import "./../scss/_variables.scss";
+
 .container{
     /* border:2px solid red; */
 
     margin: 10px;
+    div{
+        background-color: $backColor;
+    }
 }
 .plant{
-    /* border: 2px solid blue; */
     position: relative;
-    height: 300px;
-    width: 200px;
-    background-color: $backColor;
+    height: 460px;
+    width: 280px;
     border-radius: 20px;
+    border: 2px solid $backColor;
+    
     svg{
         background-color: $backColor;
+        /* margin-left: 15px; trinitycircle*/
     }
     h1{
         background-color: $backColor;
     }
+  
+}
 
-    .footWarning{
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: $popupColor;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.date{
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+    border-radius: 15px;
+    p{
         background-color: $backColor;
-        img{
-            width: 30px;
-            height: auto;
-            background-color: $backColor;
-        }
-        p{
-            font-size: 15px;
-            background-color: $backColor;
-        }
+        color: $lightBack;
     }
-   
+}
+#firstCircle{
+    margin-left: 50px;
 }
 .plant-header{
     width: 25px;
     height: auto;
-    top: 0px;
-    right: 0px;
-    background-color: $backColor;
+    top: 5px;
+    right: 5px;
     position: absolute;
 
     img{
@@ -136,9 +227,6 @@ $textColor: #e7f1e1;
 
 }
 
-.lowStatus{
-    opacity: 50%;
-}
 
 
 </style>
