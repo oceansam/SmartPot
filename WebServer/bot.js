@@ -56,6 +56,7 @@ client.on("message", async (message) => {
         axios
             .post(serverUrl + "/event", data)
             .then((res) => {
+                console.log(res);
                 if (res.statusCode == 200) {
                     message.reply(`Plant was watered.`);
                 }
